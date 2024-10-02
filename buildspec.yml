@@ -1,6 +1,6 @@
 version: 0.2
 phases:
- gipre_build:
+ pre_build:
   commands:
    - echo Logging into Amazon ECR started on `date`
    - aws --version
@@ -9,12 +9,14 @@ phases:
    - echo setting repository URI....
    - REPOSITORY_URI=863518426050.dkr.ecr.ap-south-1.amazonaws.com/cicdpipeline
    - echo setting image tag....
-   - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')|
+   - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+
  build:
   commands:
-  - echo building and tagging started image on `date`
-  - echo running mvn clean install...
-  - mvn clean install
+   - echo building and tagging started image on `date`
+   - echo running mvn clean install...
+   - mvn clean install
+
  post_build:
   commands:
    - echo pushing Docker image to Amazon ECR started on 'date'
@@ -24,10 +26,11 @@ phases:
    - echo setting container name...
    - DOCKER_CONTAINER_NAME=cdcicontainer
    - echo writing image definitions file...
-   - printf '[{"name": "%s","imageUri": "%s" } ]' $DOCKER_CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+   - printf '[{"name": "%s","imageUri": "%s"}]' $DOCKER_CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
    - echo $DOCKER_CONTAINER_NAME
    - echo printing imagedefinitions.json
    - cat imagedefinitions.json
+
 artifacts:
-  files:
-   - imagedefinitions.json
+ files:
+  - imagedefinitions.json
