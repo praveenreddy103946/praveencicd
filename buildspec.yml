@@ -14,11 +14,12 @@ phases:
 
  build:
   commands:
-   - echo building the Docker image...
-    - docker build -t $REPOSITORY_URI:latest.
-    - echo building and tagging started image on `date`
-    - echo running mvn clean install...
+   - echo Build started on `date`
+    - echo building the Jar file
     - mvn clean install
+    - echo Building the Docker image...
+    - docker build -t $REPOSITORY_URI:latest .
+    - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
 
  post_build:
   commands:
