@@ -18,16 +18,12 @@ phases:
     - echo building the Jar file
     - mvn clean install
     - echo Building the Docker image...
-    - docker build -t $REPOSITORY_URI:latest .
-    - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
     - docker images
 
  post_build:
   commands:
    - echo pushing Docker image to Amazon ECR started on `date`
    - echo pushing to repository...
-   - docker push $REPOSITORY_URI:latest
-   - docker push $REPOSITORY_URI:$IMAGE_TAG
    - echo setting container name...
    - DOCKER_CONTAINER_NAME=cdcicontainer
    - printf '[{"name":"%s","imageUri":"%s"}]' $DOCKER_CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
